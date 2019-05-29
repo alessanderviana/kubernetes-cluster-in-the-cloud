@@ -3,22 +3,35 @@
   become: yes
   tasks:
 
-# Initialize Cluster. The log is also used to prevent an second initialization
-   - name: Initialize Cluster
-     shell: sudo kubeadm init >> cluster_init.log
-     args:
-       chdir: /home/ubuntu
-       creates: cluster_init.log
+  # Initialize Cluster. The log is also used to prevent an second initialization
+  - name: Initialize Cluster
+    shell: kubeadm init >> cluster_init.log
+    args:
+      chdir: /home/ubuntu
+      creates: cluster_init.log
+      warn: no
 
-   # Create the configuration / configuration directory
-   - name: Create .kube DIR
-     file:
-       path: $HOME/.kube
-       state: directory
-       mode: 0755
+  # Create the configuration DIR
+  - name: Create .kube DIR
+    file:
+      path: $HOME/.kube
+      state: directory
+      mode: 0755
 
-   - name: Copy admin.conf to the user's kube DIR
-     copy:
-       src: /etc/kubernetes/admin.conf
-       dest: $HOME/.kube/config
-       remote_src: yes
+  - name: Copy admin.conf to the user's kube DIR
+    copy:
+      src: /etc/kubernetes/admin.conf
+      dest: $HOME/.kube/config
+      remote_src: yes
+
+  # Create the network pod
+  - name: Create the wave-net pod
+    shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+    args:
+      warn: no
+
+  # Bash completion
+  - name: Config Bash completion
+    shell: echo "source <(kubectl completion bash)" >> .bashrc
+    args:
+      warn: no
