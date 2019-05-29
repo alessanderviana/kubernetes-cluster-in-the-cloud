@@ -1,5 +1,5 @@
 # Install required software
-- hosts: kube-master:kube-node
+- hosts: all
   become: yes
   tasks:
     - name: Install Docker CE
