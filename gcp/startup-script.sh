@@ -14,7 +14,7 @@ apt-get update -q
 apt-get install -y ansible
 
 # Clone the REPO
-sudo -u ubuntu git clone https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git
+cd /home/ubuntu && sudo -u ubuntu git clone https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git
 
 # Run the playbook
 ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/node-install-software.yml
