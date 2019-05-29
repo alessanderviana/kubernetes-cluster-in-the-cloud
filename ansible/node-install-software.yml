@@ -7,6 +7,7 @@
     - name: Install Docker CE
       shell: 'curl -fsSL https://get.docker.com | sh'
 
+    # Add the ubuntu user to Docker group
     - name: Adding user ubuntu
       user: name=ubuntu
         groups=docker
@@ -35,3 +36,37 @@
           - kubelet
           - kubeadm
           - kubectl
+
+    # Change the Docker driver to systemd
+    - name: Create Docker driver file
+      copy:
+        dest: "/etc/docker/daemon.json"
+        content: |
+        '{
+         "exec-opts": ["native.cgroupdriver=systemd"],
+         "log-driver": "json-file",
+         "log-opts": {
+           "max-size": "100m"
+         },
+         "storage-driver": "overlay2",
+         "storage-opts": [
+           "overlay2.override_kernel_check=true"
+         ]
+        }'
+
+    # Create needed folder
+    - name: Create docker systemd driver DIR
+      file:
+        path: /etc/systemd/system/docker.service.d
+        state: directory
+
+    # Restart service
+    - name: Restart Docker service to apply changes
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: docker
+
+    # Pull the kube-system images to avoid do it at cluster initialization
+    - name: Pull the kubernetes images
+      command: 'kubeadm config images pull'
