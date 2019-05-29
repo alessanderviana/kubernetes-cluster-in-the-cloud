@@ -11,7 +11,7 @@ resource "google_compute_instance" "kube-cluster-node" {
 
  boot_disk {
    initialize_params {
-     image = "ubuntu-1804-bionic-v20190514"
+     image = "ubuntu-1604-xenial-v20190514"
      size = 20
    }
  }
