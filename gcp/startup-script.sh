@@ -21,6 +21,7 @@ ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/node-insta
 
 # If it's the node 1, Initialize the cluster
 if [[ "$HOSTNAME" == *"node-1"* ]]; then
-  sed -i 's/<hostname>/${HOSTNAME}/g' /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
+  echo "[kube-master]" | sudo tee -a /etc/ansible/hosts
+  echo -e "${HOSTNAME}\n" | sudo tee -a /etc/ansible/hosts
   ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
 fi
