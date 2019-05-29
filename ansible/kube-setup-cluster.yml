@@ -1,12 +1,13 @@
-- hosts: <hostname>
+- hosts: 127.0.0.1
+  connection: local
   become: yes
   tasks:
 
 # Initialize Cluster. The log is also used to prevent an second initialization
    - name: Initialize Cluster
-     shell: kubeadm init >> cluster_init.log
+     shell: sudo kubeadm init >> cluster_init.log
      args:
-       chdir: $HOME
+       chdir: /home/ubuntu
        creates: cluster_init.log
 
    # Create the configuration / configuration directory
