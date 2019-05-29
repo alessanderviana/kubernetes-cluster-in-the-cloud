@@ -1,0 +1,23 @@
+- hosts: <hostname>
+  become: yes
+  tasks:
+
+# Initialize Cluster. The log is also used to prevent an second initialization
+   - name: Initialize Cluster
+     shell: kubeadm init >> cluster_init.log
+     args:
+       chdir: $HOME
+       creates: cluster_init.log
+
+   # Create the configuration / configuration directory
+   - name: Create .kube DIR
+     file:
+       path: $HOME/.kube
+       state: directory
+       mode: 0755
+
+   - name: Copy admin.conf to the user's kube DIR
+     copy:
+       src: /etc/kubernetes/admin.conf
+       dest: $HOME/.kube/config
+       remote_src: yes
