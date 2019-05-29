@@ -5,7 +5,8 @@
   become_method: sudo
   tasks:
     - name: Install Docker CE
-      shell: 'curl -fsSL https://get.docker.com | sh'
+      command: 'curl -fsSL https://get.docker.com | sh'
+      warn: false
 
     # Add the ubuntu user to Docker group
     - name: Adding user ubuntu
@@ -37,22 +38,20 @@
           - kubeadm
           - kubectl
 
-    # Change the Docker driver to systemd
+    # Change the Docker cgroup driver to systemd
     - name: Create Docker driver file
       copy:
         dest: "/etc/docker/daemon.json"
         content: |
-        '{
-         "exec-opts": ["native.cgroupdriver=systemd"],
-         "log-driver": "json-file",
-         "log-opts": {
-           "max-size": "100m"
-         },
-         "storage-driver": "overlay2",
-         "storage-opts": [
-           "overlay2.override_kernel_check=true"
-         ]
-        }'
+                 {
+                 "exec-opts": ["native.cgroupdriver=systemd"],
+                 "log-driver": "json-file",
+                 "log-opts": {
+                   "max-size": "100m"
+                   },
+                 "storage-driver": "overlay2",
+                 "storage-opts": ["overlay2.override_kernel_check=true"]
+                 }
 
     # Create needed folder
     - name: Create docker systemd driver DIR
