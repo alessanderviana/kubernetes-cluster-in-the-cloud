@@ -5,22 +5,20 @@ locale-gen pt_BR.UTF-8 && \
 rm -f /etc/localtime && sudo ln -s /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 
 # Ansible
-apt-get update
-apt-get install software-properties-common
+apt-get update -q
+apt-get install -y software-properties-common
 
 apt-add-repository -y ppa:ansible/ansible
 
-apt-get update
-apt-get install ansible
+apt-get update -q
+apt-get install -y ansible
 
 # Clone the REPO
-git clone https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git
+sudo -u ubuntu git clone https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git
 
-# # Kubernetes
-# curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-# echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | tee -a /etc/apt/sources.list
-# apt-get update -q && apt-get install -y kubelet kubeadm kubectl
-#
+# Run the playbook
+ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/node-install-software.yml
+
 # # Adjust Docker driver (change to systemd)
 # cat > /etc/docker/daemon.json <<EOF
 # {
