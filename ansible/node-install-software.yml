@@ -5,8 +5,9 @@
   become_method: sudo
   tasks:
     - name: Install Docker CE
-      command: 'curl -fsSL https://get.docker.com | sh'
-      warn: false
+      shell: curl -fsSL https://get.docker.com | sh
+      args:
+        warn: no
 
     # Add the ubuntu user to Docker group
     - name: Adding user ubuntu
