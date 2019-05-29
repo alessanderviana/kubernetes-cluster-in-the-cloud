@@ -18,3 +18,9 @@ cd /home/ubuntu && sudo -u ubuntu git clone https://github.com/alessanderviana/k
 
 # Run the playbook
 ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/node-install-software.yml
+
+# If it's the node 1, Initialize the cluster
+if [[ "$HOSTNAME" == *"node-1"* ]]; then
+  sed -i 's/<hostname>/${HOSTNAME}/g' /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
+  ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
+fi
