@@ -2,8 +2,8 @@
 resource "google_compute_instance" "kube-cluster-node" {
  count = 1
  name         = "kube-cluster-node-${count.index + 1}"
- # machine_type = "n1-standard-2"  # 7.5 GB RAM
- machine_type = "n1-standard-1"  # 3.75 GB RAM
+ machine_type = "n1-standard-2"  # 7.5 GB RAM
+ # machine_type = "n1-standard-1"  # 3.75 GB RAM
  zone         = "${var.region}-b"
  allow_stopping_for_update = true
 
