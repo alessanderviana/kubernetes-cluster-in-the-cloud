@@ -1,4 +1,7 @@
 - hosts: kube-master
+  become: yes
+  become_user: root
+  become_method: su
   vars:
     user_home: "{{ lookup('env','HOME') }}"
   tasks:
