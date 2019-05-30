@@ -13,9 +13,10 @@ apt-add-repository -y ppa:ansible/ansible
 apt-get update -q
 apt-get install -y ansible
 
-# Enable SSH ForwardAgent
-sed -i 's/#\ \ \ ForwardAgent no/ForwardAgent yes/g' /etc/ssh/ssh_config
-sed -i '/Defaults\ \ \ \ env_reset/a Defaults\ \ \ \ env_keep += "SSH_AUTH_SOCK"/' /etc/sudoers
+# Enable SSH root login and with password
+sed -i 's/#\ \ \ PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/ssh_config
+sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 systemctl restart sshd
 
 # Run the playbook
