@@ -43,7 +43,7 @@ resource "google_compute_instance" "kube-cluster-node" {
       <<SCRIPT
       cd /home/ubuntu && \
       sudo -u ubuntu git clone https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git && \
-      sudo /home/ubuntu/kubernetes-cluster-in-the-cloud/gcp/startup-script.sh
+      sudo bash /home/ubuntu/kubernetes-cluster-in-the-cloud/gcp/startup-script.sh
 SCRIPT
       ,
     ]
