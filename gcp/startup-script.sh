@@ -27,7 +27,10 @@ gcloud auth activate-service-account \
 # If it's the node 1, Initialize the cluster
 if [[ "$HOSTNAME" == *"node-1"* ]]; then
   echo -e "[kube-master]\n127.0.0.1 ansible_connection=local\n" | sudo tee -a /etc/ansible/hosts
-  ansible-playbook kube-master /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
+  sudo su - && ansible-playbook kube-master /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
+else
+  NODE_IPS=$( gcloud compute instances list --filter="(name~kube-cluster-node-[2-9] AND zone:us-central1-b)" --format="value(name,networkInterfaces[0].networkIP)" | awk '{ print $2 }' )
+  echo -e "[kube-nodes]\n$NODE_IPS\n" | sudo tee -a /etc/ansible/hosts
 fi
 
 # gcloud compute instances list --filter="(name~kube-cluster-node-[2-9] AND zone:us-central1-b)" --format="value(name,networkInterfaces[0].networkIP)"
