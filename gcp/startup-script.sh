@@ -19,8 +19,15 @@ cd /home/ubuntu && sudo -u ubuntu git clone https://github.com/alessanderviana/k
 # Run the playbook
 ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/node-install-software.yml
 
+# Activate the service account
+gcloud auth activate-service-account \
+  kubernetes-svc@infra-como-codigo-e-automacao.iam.gserviceaccount.com \
+  --key-file=/home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kubernetes-svc.json
+
 # If it's the node 1, Initialize the cluster
 if [[ "$HOSTNAME" == *"node-1"* ]]; then
-  echo -e "[kube-master]\n127.0.0.1\n" | sudo tee -a /etc/ansible/hosts
-  ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
+  echo -e "[kube-master]\n127.0.0.1 ansible_connection=local\n" | sudo tee -a /etc/ansible/hosts
+  ansible-playbook kube-master /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
 fi
+
+# gcloud compute instances list --filter="(name~kube-cluster-node-[2-9] AND zone:us-central1-b)" --format="value(name,networkInterfaces[0].networkIP)"
