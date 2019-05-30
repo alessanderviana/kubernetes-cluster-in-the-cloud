@@ -13,11 +13,17 @@ apt-add-repository -y ppa:ansible/ansible
 apt-get update -q
 apt-get install -y ansible
 
+# Enable SSH ForwardAgent
+sed -i 's/#\ \ \ ForwardAgent no/ForwardAgent yes/g' /etc/ssh/ssh_config
+sed -i '/Defaults\ \ \ \ env_reset/a Defaults\ \ \ \ env_keep += "SSH_AUTH_SOCK"/' /etc/sudoers
+systemctl restart sshd
+
 # Run the playbook
 ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/node-install-software.yml
 
 # If it's the node 1, Initialize the cluster
 if [[ "$HOSTNAME" == *"node-1"* ]]; then
+  sed -i 's/#host_key_checking/host_key_checking/g' /etc/ansible/ansible.cfg
   echo -e "[kube-master]\n127.0.0.1 ansible_connection=local\n" | sudo tee -a /etc/ansible/hosts
   ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
 fi
@@ -30,3 +36,9 @@ gcloud auth activate-service-account \
 # Get the kubernetes nodes
 NODE_IPS=$( gcloud compute instances list --filter="(name~kube-cluster-node-[2-9] AND zone:us-central1-b)" --format="value(name,networkInterfaces[0].networkIP)" | awk '{ print $2 }' )
 echo -e "[kube-nodes]\n$NODE_IPS\n" | sudo tee -a /etc/ansible/hosts
+
+# Join the nodes to cluster
+if [[ "$HOSTNAME" == *"node-1"* ]]; then
+  JOIN_COMMAND=$( kubeadm token create --print-join-command )
+  ansible kube-nodes -m shell -u ubuntu -a '${JOIN_COMMAND}'
+fi
