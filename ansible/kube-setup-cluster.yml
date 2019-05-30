@@ -14,14 +14,14 @@
   # Create the configuration DIR
   - name: Create .kube DIR
     file:
-      path: $HOME/.kube
+      path: {{ lookup('env','HOME') }}/.kube
       state: directory
       mode: 0755
 
   - name: Copy admin.conf to the user's kube DIR
     copy:
       src: /etc/kubernetes/admin.conf
-      dest: $HOME/.kube/config
+      dest: {{ lookup('env','HOME') }}/.kube/config
       remote_src: yes
 
   # Create the network pod
