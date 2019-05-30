@@ -19,17 +19,11 @@ resource "google_compute_instance" "kube-cluster-node" {
  network_interface {
    subnetwork = "default"
    access_config { }
-   # If necessary update the firewall rule
-   # *****************************************************************************************************
-   # gcloud compute firewall-rules update YOUR_RULE_NAME --allow tcp:22,tcp:80,tcp:3389,tcp:8080,tcp:9000
-   # *****************************************************************************************************
  }
 
  metadata {
    ssh-keys = "${var.user}:${file("${var.pub_key}")}"
  }
-
- # metadata_startup_script = "${file("startup-script.sh")}"
 
  provisioner "remote-exec" {
     connection {
