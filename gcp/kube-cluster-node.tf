@@ -25,21 +25,23 @@ resource "google_compute_instance" "kube-cluster-node" {
    ssh-keys = "${var.user}:${file("${var.pub_key}")}"
  }
 
- provisioner "remote-exec" {
-    connection {
-      type = "ssh"
-      user = "${var.user}"
-      private_key = "${file("${var.priv_key}")}"
-      agent = false
-    }
+metadata_startup_script = "${file("startup-script.sh")}"
 
-    inline = [
-<<SCRIPT
-sudo git clone https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git && \
-sudo bash /home/ubuntu/kubernetes-cluster-in-the-cloud/gcp/startup-script.sh
-SCRIPT
-      ,
-    ]
- }
+#  provisioner "remote-exec" {
+#     connection {
+#       type = "ssh"
+#       user = "${var.user}"
+#       private_key = "${file("${var.priv_key}")}"
+#       agent = false
+#     }
+#
+#     inline = [
+# <<SCRIPT
+# sudo git clone https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git && \
+# sudo bash /home/ubuntu/kubernetes-cluster-in-the-cloud/gcp/startup-script.sh
+# SCRIPT
+#       ,
+#     ]
+#  }
 
 }
