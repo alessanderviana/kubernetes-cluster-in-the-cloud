@@ -31,23 +31,23 @@ ssh-keygen -t rsa -f ~/.ssh/kube_${USER} -q -N ""
 # Run the playbook
 ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/node-install-software.yml
 
+# Activate the service account
+gcloud auth activate-service-account \
+  kubernetes-svc@infra-como-codigo-e-automacao.iam.gserviceaccount.com \
+  --key-file=/home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kubernetes-svc.json
+
 # If it's the node 1, Initialize the cluster
 if [[ "$HOSTNAME" == *"node-1"* ]]; then
   sed -i 's/#host_key_checking/host_key_checking/g' /etc/ansible/ansible.cfg
   echo -e "[kubemaster]\n127.0.0.1 ansible_connection=local\n" | sudo tee -a /etc/ansible/hosts
   echo -e "[kubemaster:vars]\nansible_python_interpreter=/usr/bin/python3\n" | sudo tee -a /etc/ansible/hosts
   ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
+
+  # Get the kubernetes nodes
+  NODE_IPS=$( gcloud compute instances list --filter="(name~kube-cluster-node-[2-9] AND zone:us-central1-b)" --format="value(name,networkInterfaces[0].networkIP)" | awk '{ print $2 }' )
+  echo -e "[kubenodes]\n$NODE_IPS\n" | sudo tee -a /etc/ansible/hosts
+  echo -e "[kubenodes:vars]\nansible_python_interpreter=/usr/bin/python3\n" | sudo tee -a /etc/ansible/hosts
 fi
-
-# Activate the service account
-gcloud auth activate-service-account \
-  kubernetes-svc@infra-como-codigo-e-automacao.iam.gserviceaccount.com \
-  --key-file=/home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kubernetes-svc.json
-
-# Get the kubernetes nodes
-NODE_IPS=$( gcloud compute instances list --filter="(name~kube-cluster-node-[2-9] AND zone:us-central1-b)" --format="value(name,networkInterfaces[0].networkIP)" | awk '{ print $2 }' )
-echo -e "[kubenodes]\n$NODE_IPS\n" | sudo tee -a /etc/ansible/hosts
-echo -e "[kubenodes:vars]\nansible_python_interpreter=/usr/bin/python3\n" | sudo tee -a /etc/ansible/hosts
 
 # Join the nodes to cluster
 if [[ "$HOSTNAME" == *"node-1"* ]]; then
