@@ -1,30 +1,25 @@
-- hosts: kube-master
-  become: yes
-  become_user: root
-  become_method: su
-  vars:
-    user_home: "{{ lookup('env','HOME') }}"
+- hosts: kubemaster
   tasks:
 
   # Initialize Cluster. The log is also used to prevent an second initialization
   - name: Initialize Cluster
     shell: kubeadm init >> cluster_init.log
     args:
-      chdir: "{{ user_home }}"
+      chdir: /root
       creates: cluster_init.log
       warn: no
 
   # Create the configuration DIR
   - name: Create .kube DIR
     file:
-      path: "{{ user_home }}/.kube"
+      path: /root/.kube"
       state: directory
       mode: 0755
 
   - name: Copy admin.conf to the user's kube DIR
     copy:
       src: /etc/kubernetes/admin.conf
-      dest: "{{ user_home }}/.kube/config"
+      dest: /root/.kube/config"
       remote_src: yes
 
   # Create the network pod
