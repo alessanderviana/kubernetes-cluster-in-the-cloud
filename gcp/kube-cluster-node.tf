@@ -35,9 +35,10 @@ resource "google_compute_instance" "kube-cluster-node" {
 
     inline = [
       <<SCRIPT
-      cd /home/ubuntu && \
-      sudo -u ubuntu git clone https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git && \
-      sudo bash /home/ubuntu/kubernetes-cluster-in-the-cloud/gcp/startup-script.sh
+      sudo su - && \
+      cd && \
+      git clone https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git && \
+      bash /home/ubuntu/kubernetes-cluster-in-the-cloud/gcp/startup-script.sh
 SCRIPT
       ,
     ]
