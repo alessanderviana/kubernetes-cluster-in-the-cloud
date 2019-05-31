@@ -27,7 +27,7 @@ kub3_+eRra 4nS1ble
 EOF
 
 # Run the playbook
-ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/node-install-software.yml
+ansible-playbook kubernetes-cluster-in-the-cloud/ansible/node-install-software.yml
 
 # If it's the node 1, do the specified below
 if [[ "$HOSTNAME" == *"node-1"* ]]; then
@@ -35,12 +35,12 @@ if [[ "$HOSTNAME" == *"node-1"* ]]; then
   sed -i 's/#host_key_checking/host_key_checking/g' /etc/ansible/ansible.cfg
   echo -e "[kubemaster]\n127.0.0.1 ansible_connection=local\n" | sudo tee -a /etc/ansible/hosts
   echo -e "[kubemaster:vars]\nansible_python_interpreter=/usr/bin/python3\n" | sudo tee -a /etc/ansible/hosts
-  ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
+  ansible-playbook kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
 
   # Activate the service account
   gcloud auth activate-service-account \
     kubernetes-svc@infra-como-codigo-e-automacao.iam.gserviceaccount.com \
-    --key-file=/home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kubernetes-svc.json
+    --key-file=kubernetes-cluster-in-the-cloud/ansible/kubernetes-svc.json
 
   # Get the kubernetes nodes
   NODE_IPS=$( gcloud compute instances list --filter="(name~kube-cluster-node-[2-9] AND zone:us-central1-b)" --format="value(name,networkInterfaces[0].networkIP)" | awk '{ print $2 }' )
