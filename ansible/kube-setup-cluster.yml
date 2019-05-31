@@ -1,10 +1,9 @@
 - hosts: kubemaster
-  become: yes
   tasks:
 
   # Initialize Cluster. The log is also used to prevent an second initialization
   - name: Initialize Cluster
-    shell: kubeadm init >> cluster_init.log
+    shell: kubeadm init >> cluster_init
     args:
       chdir: /root
       creates: cluster_init.log
@@ -35,7 +34,7 @@
 >>>>>>> 9e32d42... Changed the install wave-net for last position
   # Bash completion
   - name: Config Bash completion
-    shell: echo "source <(kubectl completion bash)" >> .bashrc
+    command: echo "source <(kubectl completion bash)" >> /root/.bashrc
     args:
       warn: no
 
