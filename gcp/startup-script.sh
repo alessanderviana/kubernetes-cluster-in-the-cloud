@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Clone the REPO
+cd /root && git clone https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git
+
 # Fix Locale and adjust Timezone
 locale-gen pt_BR.UTF-8 && \
 rm -f /etc/localtime && sudo ln -s /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
@@ -32,7 +35,7 @@ if [[ "$HOSTNAME" == *"node-1"* ]]; then
   sed -i 's/#host_key_checking/host_key_checking/g' /etc/ansible/ansible.cfg
   echo -e "[kubemaster]\n127.0.0.1 ansible_connection=local\n" | sudo tee -a /etc/ansible/hosts
   echo -e "[kubemaster:vars]\nansible_python_interpreter=/usr/bin/python3\n" | sudo tee -a /etc/ansible/hosts
-  sudo -u root ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
+  ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
 
   # Activate the service account
   gcloud auth activate-service-account \
@@ -45,9 +48,9 @@ if [[ "$HOSTNAME" == *"node-1"* ]]; then
   echo -e "[kubenodes:vars]\nansible_python_interpreter=/usr/bin/python3\n" | sudo tee -a /etc/ansible/hosts
 
   # Generate a key pair to root
-  sudo -u root ssh-keygen -t rsa -f ~/.ssh/kube_${USER} -q -N ""
-  
+  ssh-keygen -t rsa -f /root/.ssh/kube_${USER} -q -N ""
+
   # Join the nodes to cluster
   JOIN_COMMAND=$( kubeadm token create --print-join-command )
-  ansible kubenodes -m shell -a '${JOIN_COMMAND}' --private-key=~/.ssh/kube_${USER}
+  ansible kubenodes -m shell -a '${JOIN_COMMAND}' --private-key=/root/.ssh/kube_${USER}
 fi
