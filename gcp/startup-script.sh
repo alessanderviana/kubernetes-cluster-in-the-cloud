@@ -52,5 +52,5 @@ echo -e "[kubenodes:vars]\nansible_python_interpreter=/usr/bin/python3\n" | sudo
 # Join the nodes to cluster
 if [[ "$HOSTNAME" == *"node-1"* ]]; then
   JOIN_COMMAND=$( kubeadm token create --print-join-command )
-  ansible kubenodes -m shell -a '${JOIN_COMMAND}' --private-key ~/.ssh/kube_${USER}
+  ansible kubenodes -m shell -a '${JOIN_COMMAND}' --private-key=~/.ssh/kube_${USER}
 fi
