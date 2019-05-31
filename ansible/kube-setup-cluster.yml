@@ -1,4 +1,6 @@
 - hosts: kubemaster
+  become: yes
+  become_user: root
   tasks:
 
   # Initialize Cluster. The log is also used to prevent an second initialization
@@ -12,14 +14,14 @@
   # Create the configuration DIR
   - name: Create .kube DIR
     file:
-      path: /root/.kube"
+      path: /root/.kube
       state: directory
       mode: 0755
 
   - name: Copy admin.conf to the user's kube DIR
     copy:
       src: /etc/kubernetes/admin.conf
-      dest: /root/.kube/config"
+      dest: /root/.kube/config
       remote_src: yes
 
   # Create the network pod
