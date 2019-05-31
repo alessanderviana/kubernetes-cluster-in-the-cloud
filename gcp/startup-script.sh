@@ -23,16 +23,8 @@ kub3_+eRra 4nS1ble
 kub3_+eRra 4nS1ble
 EOF
 
-# Generate a key pair to root
-sudo -u root ssh-keygen -t rsa -f ~/.ssh/kube_${USER} -q -N ""
-
 # Run the playbook
 ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/node-install-software.yml
-
-# Activate the service account
-gcloud auth activate-service-account \
-  kubernetes-svc@infra-como-codigo-e-automacao.iam.gserviceaccount.com \
-  --key-file=/home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kubernetes-svc.json
 
 # If it's the node 1, do the specified below
 if [[ "$HOSTNAME" == *"node-1"* ]]; then
@@ -42,11 +34,19 @@ if [[ "$HOSTNAME" == *"node-1"* ]]; then
   echo -e "[kubemaster:vars]\nansible_python_interpreter=/usr/bin/python3\n" | sudo tee -a /etc/ansible/hosts
   sudo -u root ansible-playbook /home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kube-setup-cluster.yml
 
+  # Activate the service account
+  gcloud auth activate-service-account \
+    kubernetes-svc@infra-como-codigo-e-automacao.iam.gserviceaccount.com \
+    --key-file=/home/ubuntu/kubernetes-cluster-in-the-cloud/ansible/kubernetes-svc.json
+
   # Get the kubernetes nodes
   NODE_IPS=$( gcloud compute instances list --filter="(name~kube-cluster-node-[2-9] AND zone:us-central1-b)" --format="value(name,networkInterfaces[0].networkIP)" | awk '{ print $2 }' )
   echo -e "[kubenodes]\n$NODE_IPS\n" | sudo tee -a /etc/ansible/hosts
   echo -e "[kubenodes:vars]\nansible_python_interpreter=/usr/bin/python3\n" | sudo tee -a /etc/ansible/hosts
 
+  # Generate a key pair to root
+  sudo -u root ssh-keygen -t rsa -f ~/.ssh/kube_${USER} -q -N ""
+  
   # Join the nodes to cluster
   JOIN_COMMAND=$( kubeadm token create --print-join-command )
   ansible kubenodes -m shell -a '${JOIN_COMMAND}' --private-key=~/.ssh/kube_${USER}
