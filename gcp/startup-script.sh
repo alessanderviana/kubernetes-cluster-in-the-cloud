@@ -20,10 +20,15 @@ sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd
 sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 systemctl restart sshd
 
+# In GCP we have to disable the sshguard
+systemctl stop sshguard
+systemctl disable sshguard
+
 # root password
+PASS='kub3_+eRra 4nS1ble'
 passwd <<EOF
-kub3_+eRra 4nS1ble
-kub3_+eRra 4nS1ble
+${PASS}
+${PASS}
 EOF
 
 # Run the playbook
@@ -50,7 +55,17 @@ if [[ "$HOSTNAME" == *"node-1"* ]]; then
   # Generate a key pair to root
   ssh-keygen -t rsa -f /root/.ssh/kube_root -q -N ""
 
+  # Get the nodes
+  NODE_HOSTS=$( ansible kubenodes -i /etc/ansible/hosts --list-hosts | grep -v hosts )
+
+  for H in $( echo $NODE_HOSTS );
+  do
+    sshpass -p "${PASS}" ssh-copy-id -i .ssh/kube_root ${H}
+  done
+
   # Join the nodes to cluster
   JOIN_COMMAND=$( kubeadm token create --print-join-command )
   ansible kubenodes -m shell -a '${JOIN_COMMAND}' --private-key=/root/.ssh/kube_root
 fi
+
+# tail -f /var/log/syslog | grep startup-script
