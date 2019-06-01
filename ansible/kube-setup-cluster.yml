@@ -46,3 +46,24 @@
     when: result.stdout == "5"
     args:
       warn: no
+
+# - name: Search for running pods in namespace
+#   k8s_facts:
+#     kind: Pod
+#     namespace: kube-system
+#     field_selectors:
+#       - status.phase = running
+#   register: pod_list
+#   until: pod_list.stdout_lines == '5'
+#   delay: 5
+#   retries: 3
+#
+# - name: Download wave-net yaml
+#   shell: wget -o /tmp/net.yaml https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')
+#   args:
+#       warn: no
+#
+# - name: Create the wave-net deployment
+#   k8s:
+#     state: present
+#     src: /tmp/net.yaml
