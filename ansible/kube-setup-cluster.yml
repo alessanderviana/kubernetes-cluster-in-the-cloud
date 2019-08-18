@@ -1,6 +1,5 @@
 - hosts: kubemaster
   become: yes
-  become_user: root
   tasks:
 
   # Initialize Cluster. The log is also used to prevent an second initialization
@@ -18,20 +17,30 @@
       state: directory
       mode: 0755
 
+  # Copy the config file
   - name: Copy admin.conf to the user's kube DIR
     copy:
       src: /etc/kubernetes/admin.conf
       dest: /root/.kube/config
       remote_src: yes
 
+<<<<<<< HEAD
   # Create the network pod
   - name: Create the wave-net pod
     shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
     args:
       warn: no
 
+=======
+>>>>>>> 9e32d42... Changed the install wave-net for last position
   # Bash completion
   - name: Config Bash completion
     shell: echo "source <(kubectl completion bash)" >> .bashrc
+    args:
+      warn: no
+
+  # Create the network pod
+  - name: Create the wave-net pod
+    shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
     args:
       warn: no
