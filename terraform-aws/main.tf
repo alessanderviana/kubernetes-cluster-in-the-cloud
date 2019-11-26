@@ -30,6 +30,7 @@ resource "aws_instance" "k8s-aws" {
   subnet_id                   = "subnet-6912ae43"
   associate_public_ip_address = true
   security_groups             = ["${aws_security_group.sg-k8s-aws.id}"]
+  count                       = 2
 
   user_data     = <<SCRIPT
 #!/bin/bash
