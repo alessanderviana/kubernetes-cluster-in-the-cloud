@@ -5,9 +5,8 @@ kubectl create ns production
 
 # Create the redis pod
 kubectl --namespace=production create -f kubernetes/redis/redis.yaml
-<<<<<<< HEAD
-# kubectl create -f kubernetes/redis
 
+# kubectl create -f kubernetes/redis
 export REDIS_C_IP=$( kubectl get svc -n production | grep redis | awk '{ print $3 }' )
 export NODE_IP=$( ifconfig ens4 | grep 'inet addr' | awk -F':' '{ print $2 }' | awk '{ print $1 }' )
 export BACK_NODE_PORT=$( kubectl -n production describe svc $( kubectl -n production get svc | grep backend | awk '{ print $1 }' ) | grep 'NodePort:' | awk '{ print $3 }' | awk -F'/' '{ print $1 }' )
@@ -17,8 +16,6 @@ envsubst < kubernetes/production/backend-production.tplt > kubernetes/production
 envsubst < kubernetes/production/frontend-production.tplt > kubernetes/production/frontend-production.yaml
 envsubst < kubernetes/canary/backend-canary.tplt > kubernetes/canary/backend-canary.yaml
 envsubst < kubernetes/canary/frontend-canary.tplt > kubernetes/canary/frontend-canary.yaml
-=======
->>>>>>> master
 
 # Create a Metal LoadBalancer
 kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/metallb.yaml

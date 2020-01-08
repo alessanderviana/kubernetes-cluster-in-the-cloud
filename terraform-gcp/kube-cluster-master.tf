@@ -5,12 +5,14 @@ resource "google_compute_instance" "kube-cluster-master" {
  zone         = "${var.region}-b"
  allow_stopping_for_update = true
 
- tags = [ "Kube Cluster Master" ]
+ labels = {
+    name = "kube-cluster-master"
+  }
 
  boot_disk {
    initialize_params {
      image = "ubuntu-1804-bionic-v20191113" # ubuntu-1604-xenial-v20190514
-     size = 20
+     size = 50
    }
  }
 

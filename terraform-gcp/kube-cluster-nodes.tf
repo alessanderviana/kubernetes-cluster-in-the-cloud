@@ -6,12 +6,14 @@ resource "google_compute_instance" "kube-cluster-node" {
  zone         = "${var.region}-b"
  allow_stopping_for_update = true
 
- tags = [ "Kube Cluster Node 1" ]
+ labels = {
+    name = "kube-cluster-node-${count.index + 1}"
+  }
 
  boot_disk {
    initialize_params {
      image = "ubuntu-1804-bionic-v20191113"
-     size = 20
+     size = 50
    }
  }
 

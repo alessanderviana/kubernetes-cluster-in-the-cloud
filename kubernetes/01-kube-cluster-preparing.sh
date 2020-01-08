@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Cluster init
-# kubeadm init
+kubeadm init
 
 # Configure the current user
 mkdir -p $HOME/.kube
