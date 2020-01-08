@@ -31,8 +31,9 @@ systemctl daemon-reload && systemctl restart docker
 echo "DOWNLOADING NEEDED IMAGES"
 kubeadm config images pull
 
-echo "CLONE THE REPO"
+echo "CLONE THE REPOS"
 cd /root && git clone -b DEV-757/replicacao-da-nova-stack https://alessander.viana:S4yvdnxBfLvV7Ey_Z2kz@gitlab.com/equipe-ninja/tools/monitoring.git
+cd /root && git clone -b helm-charts-tests https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git
 
 echo "UPDATING O.S."
 apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y -o Dpkg::Options::="--force-confdef"
