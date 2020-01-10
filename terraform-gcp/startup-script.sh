@@ -35,5 +35,12 @@ echo "CLONE THE REPOS"
 cd /root && git clone -b DEV-757/replicacao-da-nova-stack https://alessander.viana:S4yvdnxBfLvV7Ey_Z2kz@gitlab.com/equipe-ninja/tools/monitoring.git
 cd /root && git clone -b helm-charts-tests https://github.com/alessanderviana/kubernetes-cluster-in-the-cloud.git
 
+echo "INSTALL AND CONFIGURE XINETD"
+apt-get update && apt-get install -y xinetd
+cd /root/kubernetes-cluster-in-the-cloud && cp grafana.xinetd /etc/xinetd.d/grafana
+cp alertmanager.xinetd /etc/xinetd.d/alertmanager
+cp prom2teams.xinetd /etc/xinetd.d/prom2teams
+systemctl restart xinetd
+
 echo "UPDATING O.S."
 apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y -o Dpkg::Options::="--force-confdef"

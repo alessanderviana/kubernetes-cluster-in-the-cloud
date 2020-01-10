@@ -1,0 +1,12 @@
+# default: off
+
+service grafana
+{
+        disable         = no
+        type            = UNLISTED
+        socket_type     = stream
+        protocol        = tcp
+        user            = root
+        wait            = no
+        redirect        = 10.96.181.85 80
+        port            = 80

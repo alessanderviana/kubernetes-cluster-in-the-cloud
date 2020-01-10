@@ -1,0 +1,13 @@
+# default: off
+
+service prom2teams
+{
+        disable         = yes
+        type            = UNLISTED
+        socket_type     = stream
+        protocol        = tcp
+        user            = root
+        wait            = no
+        redirect        = 10.96.139.255 8089
+        port            = 80
+}
