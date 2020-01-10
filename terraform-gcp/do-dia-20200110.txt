@@ -1,0 +1,42 @@
+
+git clone -b test-monitoring-stg https://alessander.viana:S4yvdnxBfLvV7Ey_Z2kz@gitlab.com/equipe-ninja/tools/monitoring.git
+
+
+
+Remover nodeSelector do blackbox, prometheus
+
+helm upgrade blackbox stable/prometheus-blackbox-exporter -i --namespace monitoring --values ./exporters/blackbox/values-stg.yaml --force 
+(NÃO PRECISA -> --wait, --debug)
+
+helm upgrade prom2teams ./forwarders/prom2teams/ -i --namespace monitoring --values ./forwarders/prom2teams/values-stg.yaml
+(NÃO PRECISA -> --wait, --debug)
+
+kubectl apply -f prometheus/pv01.yaml && \
+kubectl apply -f prometheus/pv02.yaml && \
+kubectl apply -f grafana/pv03.yaml
+
+kubectl apply -f prometheus/pvc01.yaml && \
+kubectl apply -f prometheus/pvc02.yaml && \
+kubectl apply -f grafana/pvc03.yaml
+
+helm upgrade prometheus stable/prometheus -i --namespace monitoring --values ./prometheus/values-tests.yaml --force
+(NÃO PRECISA -> --wait, --debug)
+
+chmod -R 777 /tmp/pv02 && chmod -R 777 /tmp/pv01
+
+
+# echo -n 's3' | base64
+czM=
+# echo -n 'images.grafana.saraivaeducacao.com.br' | base64
+aW1hZ2VzLmdyYWZhbmEuc2FyYWl2YWVkdWNhY2FvLmNvbS5icg==
+# echo -n 'us-east-1' | base64
+dXMtZWFzdC0x
+
+
+kubectl apply -f grafana/grafana-external-info.yaml
+
+helm upgrade grafana stable/grafana -i --namespace monitoring --values ./grafana/values-tests.yaml --set grafana.security.adminUser=admin --set grafana.security.adminPassword=giropops --force
+
+
+kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo .
+
